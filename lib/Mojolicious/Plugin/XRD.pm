@@ -2,7 +2,7 @@ package Mojolicious::Plugin::XRD;
 use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::Util qw/quote/;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 # Register Plugin
 sub register {
@@ -20,10 +20,14 @@ sub register {
       my ($c, $xrd, $res) = @_;
 
       # Define xrd or jrd
-      $c->stash('format' => scalar $c->param('format')) unless $c->stash('format');
+      unless ($c->stash('format')) {
+	$c->stash('format' => scalar $c->param('format'));
+      };
 
       # Add CORS header
-      $c->res->headers->header('Access-Control-Allow-Origin' => '*');
+      $c->res->headers->header(
+	'Access-Control-Allow-Origin' => '*'
+      );
 
       my $status = 200;
 
@@ -39,14 +43,17 @@ sub register {
 	$xrd = $c->new_xrd($xrd->to_xml);
 
 	# Create CSS selector for unwanted relations
-	my $rel = 'Link:' . join(':', map { 'not([rel=' . quote($_) . '])'} $c->param('rel'));
+	my $rel = 'Link:' . join(
+	  ':',
+	  map { 'not([rel=' . quote($_) . '])'} $c->param('rel')
+	);
 
 	# Delete all unwanted relations
 	$xrd->find($rel)->pluck('remove');
       };
 
       # content negotiation
-      $c->respond_to(
+      return $c->respond_to(
 
 	# JSON request
 	json => sub { $c->render(
@@ -99,10 +106,27 @@ Mojolicious::Plugin::XRD - Render XRD documents with Mojolicious
 
   # In controller
   my $xrd = $c->new_xrd;
+  $xrd->subject('acct:akron@sojolicio.us');
   $xrd->link(profile => '/me.html');
 
-  # Render as XRD or JRD
+  # Render as XRD or JRD, depending on request
   $c->render_xrd($xrd);
+
+  # Content-Type: application/xrd+xml
+  # <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+  # <XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0"
+  #      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  #   <Subject>acct:akron@sojolicio.us</Subject>
+  #   <Link href="/me.html"
+  #         rel="profile" />
+  # </XRD>
+
+  # or:
+  # Content-Type: application/jrd+json
+  # {
+  #   "subject":"acct:akron@sojolicio.us",
+  #   "links":[{"rel":"profile","href":"\/me.html"}]
+  # }
 
 
 =head1 DESCRIPTION
@@ -157,6 +181,7 @@ There are different versions of XRD and JRD
 with different MIME types defined.
 In some cases you may have to change the MIME type
 manually.
+
 
 =head1 DEPENDENCIES
 
