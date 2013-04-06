@@ -1,5 +1,6 @@
 lib/Mojolicious/Plugin/XRD.pm
 t/XRD.t
+t/XRD-fetch.t
 Changes
 MANIFEST
 LICENSE
