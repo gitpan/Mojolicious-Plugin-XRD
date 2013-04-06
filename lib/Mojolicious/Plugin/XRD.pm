@@ -2,7 +2,7 @@ package Mojolicious::Plugin::XRD;
 use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::Util qw/quote/;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 # Todo: Support
 #  $self->render_xrd( $xrd => {
@@ -170,6 +170,7 @@ sub _get_xrd {
     $xrd = $xrd->filter_rel($rel) if $rel;
 
     # Return xrd
+    return ($xrd, $xrd_res->headers->clone) if wantarray;
     return $xrd;
   };
 
@@ -198,7 +199,7 @@ sub _get_xrd {
 	  $xrd = $xrd->filter_rel($rel) if $rel;
 
 	  # Send to callback
-	  return $cb->($xrd);
+	  return $cb->($xrd, $xrd_res->headers->clone);
 	};
 
 	# Only support secure retrieval
@@ -237,7 +238,7 @@ sub _get_xrd {
 	    $xrd = $xrd->filter_rel($rel) if $rel;
 
 	    # Send to callback
-	    return $cb->($xrd);
+	    return $cb->($xrd, $xrd_res->headers->clone);
 	  };
 
 	  # Fail
@@ -335,6 +336,9 @@ Returns a new L<XML::Loy::XRD> object without extensions.
   # In Controller:
   my $xrd = $self->get_xrd('//gmail.com/.well-known/host-meta');
 
+  # In array context
+  my ($xrd, $headers) = $self->get_xrd('//gmail.com/.well-known/host-meta');
+
   # With relation restrictions and security flag
   $xrd = $self->get_xrd('https://gmail.com/.well-known/host-meta' => ['lrdd']);
 
@@ -345,13 +349,14 @@ Returns a new L<XML::Loy::XRD> object without extensions.
 
   # Non-blocking
   $self->get_xrd('//gmail.com/.well-known/host-meta' => sub {
-    my $xrd = shift;
+    my ($xrd, $headers) = @_;
     $xrd->extension(-HostMeta);
     print $xrd->host;
   });
 
 Fetches an XRD document from a given resource and returns it as
-L<XML::Loy::XRD> document.
+L<XML::Loy::XRD> document. In array context it additionally returns the
+response headers as a L<Mojo::Headers> object.
 
 Expects a valid URL. In case no scheme is given (e.g., C<//gmail.com>),
 the method will first try to fetch the resource with C<https> and
