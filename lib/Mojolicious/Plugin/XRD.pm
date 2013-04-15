@@ -2,7 +2,8 @@ package Mojolicious::Plugin::XRD;
 use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::Util qw/quote/;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
+
 
 # Todo: Support
 #  $self->render_xrd( $xrd => {
@@ -11,8 +12,18 @@ our $VERSION = '0.04';
 #    cache    => ...,
 #    chi      => ...
 #  });
+#
+# - Add Acceptance for XRD and JRD and JSON as a header
 
+# UserAgent name
 my $UA_NAME = __PACKAGE__ . ' v' . $VERSION;
+
+# UserAgent maximum redirects
+my $UA_MAX_REDIRECTS   = 10;
+
+# UserAgent connect timeout
+my $UA_CONNECT_TIMEOUT = 7;
+
 
 # Register Plugin
 sub register {
@@ -42,10 +53,10 @@ sub register {
       my $status = 200;
 
       # Not found
-      unless (defined $xrd) {
+      if (!defined $xrd || !ref($xrd)) {
 	$status = 404;
 	$xrd = $c->new_xrd;
-	$xrd->subject("$res");
+	$xrd->subject("$res") if $res;
       }
 
       # rel parameter
@@ -121,7 +132,8 @@ sub _get_xrd {
   # Get secure user agent
   my $ua = Mojo::UserAgent->new(
     name => $UA_NAME,
-    max_redirects => ($secure ? 0 : 3)
+    max_redirects => ($secure ? 0 : $UA_MAX_REDIRECTS),
+    connect_timeout => $UA_CONNECT_TIMEOUT
   );
 
   my $xrd;
@@ -151,7 +163,7 @@ sub _get_xrd {
       $resource->scheme('http');
 
       # Update insecure max_redirects;
-      $ua->max_redirects(3);
+      $ua->max_redirects($UA_MAX_REDIRECTS);
 
       # Then try insecure
       $tx = $ua->get($resource => $header);
@@ -222,7 +234,7 @@ sub _get_xrd {
 	  $resource->scheme('http');
 
 	  # Get with http and redirects
-	  $ua->max_redirects(3);
+	  $ua->max_redirects($UA_MAX_REDIRECTS);
 	  $ua->get($resource => $header => $delay->begin );
 	},
 	sub {

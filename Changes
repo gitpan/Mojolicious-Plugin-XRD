@@ -1,4 +1,9 @@
-0.04 2013-04-06
+0.05 2013-04-15
+        - Raised max_redirections to 10.
+	- Lowerded connect_timeout to 7.
+	- Some async tests.
+
+0.04 2013-04-07
         - Added headers to get_xrd().
 
 0.03 2013-04-06
