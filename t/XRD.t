@@ -171,12 +171,22 @@ $t->get_ok('/test')
   ->element_exists('Link[rel="author"][href="http://example.com/author/john"]')
   ->element_exists('Link[rel="copyright"][template="http://example.com/copyright?id={uri}"]');
 
+$t->head_ok('/test')
+  ->status_is(200)
+  ->header_is('Access-Control-Allow-Origin' => '*')
+  ->content_is('');
+
 $t->get_ok('/test?rel=author')
   ->status_is(200)
   ->header_is('Access-Control-Allow-Origin' => '*')
   ->element_exists('Link[rel="author"][href="http://blog.example.com/author/steve"]')
   ->element_exists('Link[rel="author"][href="http://example.com/author/john"]')
   ->element_exists_not('Link[rel="copyright"][template="http://example.com/copyright?id={uri}"]');
+
+$t->head_ok('/test?rel=author')
+  ->status_is(200)
+  ->header_is('Access-Control-Allow-Origin' => '*')
+  ->content_is('');
 
 $t->get_ok('/test?rel=author&rel=copyright')
   ->status_is(200)
@@ -185,6 +195,11 @@ $t->get_ok('/test?rel=author&rel=copyright')
   ->element_exists('Link[rel="author"][href="http://example.com/author/john"]')
   ->element_exists('Link[rel="copyright"][template="http://example.com/copyright?id={uri}"]');
 
+$t->head_ok('/test?rel=author&rel=copyright')
+  ->status_is(200)
+  ->header_is('Access-Control-Allow-Origin' => '*')
+  ->content_is('');
+
 $t->get_ok('/test?rel=copyright')
   ->status_is(200)
   ->header_is('Access-Control-Allow-Origin' => '*')
@@ -192,11 +207,21 @@ $t->get_ok('/test?rel=copyright')
   ->element_exists_not('Link[rel="author"][href="http://example.com/author/john"]')
   ->element_exists('Link[rel="copyright"][template="http://example.com/copyright?id={uri}"]');
 
+$t->head_ok('/test?rel=copyright')
+  ->status_is(200)
+  ->header_is('Access-Control-Allow-Origin' => '*')
+  ->content_is('');
+
 $t->get_ok('/no_test?res=versuch')
   ->status_is(404)
   ->content_type_is('application/xrd+xml')
   ->header_is('Access-Control-Allow-Origin' => '*')
   ->text_is('Subject' => 'versuch');
+
+$t->head_ok('/no_test?res=versuch')
+  ->status_is(404)
+  ->content_type_is('application/xrd+xml')
+  ->content_is('');
 
 $t->get_ok('/no_test?res=versuch&format=json')
   ->status_is(404)
@@ -204,11 +229,23 @@ $t->get_ok('/no_test?res=versuch&format=json')
   ->header_is('Access-Control-Allow-Origin' => '*')
   ->json_is('/subject' => 'versuch');
 
+$t->head_ok('/no_test?res=versuch&format=json')
+  ->status_is(404)
+  ->content_type_is('application/json')
+  ->header_is('Access-Control-Allow-Origin' => '*')
+  ->content_is('');
+
 $t->get_ok('/no_test?res=versuch&format=jrd')
   ->status_is(404)
   ->content_type_is('application/jrd+json')
   ->header_is('Access-Control-Allow-Origin' => '*')
   ->json_is('/subject' => 'versuch');
+
+$t->head_ok('/no_test?res=versuch&format=jrd')
+  ->status_is(404)
+  ->content_type_is('application/jrd+json')
+  ->header_is('Access-Control-Allow-Origin' => '*')
+  ->content_is('');
 
 done_testing;
 

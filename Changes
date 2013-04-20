@@ -1,3 +1,7 @@
+0.06 2013-04-15
+        - Trim tail of undefined values.
+	- Support HEAD method.
+
 0.05 2013-04-15
         - Raised max_redirections to 10.
 	- Lowerded connect_timeout to 7.

@@ -2,7 +2,7 @@ package Mojolicious::Plugin::XRD;
 use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::Util qw/quote/;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 
 # Todo: Support
@@ -66,27 +66,29 @@ sub register {
 	$xrd = $xrd->filter_rel( $c->param('rel') );
       };
 
+      my $head_data = $c->req->method eq 'HEAD' ? '' : undef;
+
       # content negotiation
       return $c->respond_to(
 
 	# JSON request
 	json => sub { $c->render(
 	  status => $status,
-	  data   => $xrd->to_json,
+	  data   => $head_data // $xrd->to_json,
 	  format => 'json'
 	)},
 
 	# JRD request
 	jrd => sub { $c->render(
 	  status => $status,
-	  data   => $xrd->to_json,
+	  data   => $head_data // $xrd->to_json,
 	  format => 'jrd'
 	)},
 
 	# XML default
 	any => sub { $c->render(
 	  status => $status,
-	  data   => $xrd->to_pretty_xml,
+	  data   => $head_data // $xrd->to_pretty_xml,
 	  format => 'xrd'
 	)}
       );
@@ -107,6 +109,9 @@ sub register {
 sub _get_xrd {
   my $c = shift;
   my $resource = Mojo::URL->new( shift );
+
+  # Trim tail
+  pop while @_ && !defined $_[-1];
 
   # No valid resource
   return unless $resource->host;
