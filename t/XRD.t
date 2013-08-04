@@ -38,7 +38,7 @@ my $subnode_1 = $xrd->add('Link',{ rel => 'foo' }, 'bar');
 is(ref($subnode_1), 'XML::Loy::XRD',
    'Subnode added');
 
-is($xrd->at('Link')->attrs('rel'), 'foo', 'Attribute');
+is($xrd->at('Link')->attr('rel'), 'foo', 'Attribute');
 is($xrd->at('Link[rel="foo"]')->text, 'bar', 'Text');
 is($xrd->link('foo')->text, 'bar', 'Text');
 
