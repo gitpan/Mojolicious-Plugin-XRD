@@ -2,8 +2,7 @@ package Mojolicious::Plugin::XRD;
 use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::Util qw/quote/;
 
-our $VERSION = '0.07';
-
+our $VERSION = '0.08';
 
 # Todo: Support
 #  $self->render_xrd( $xrd => {
@@ -55,7 +54,7 @@ sub register {
       # Not found
       if (!defined $xrd || !ref($xrd)) {
 	$status = 404;
-	$xrd = $c->new_xrd;
+	$xrd = $c->helpers->new_xrd;
 	$xrd->subject("$res") if $res;
       }
 
@@ -146,6 +145,9 @@ sub _get_xrd {
   # Set to secure, if not defined
   $resource->scheme('https') unless $resource->scheme;
 
+  # Get helpers proxy object
+  my $h = $c->helpers;
+
   # Is blocking
   unless ($cb) {
 
@@ -181,7 +183,7 @@ sub _get_xrd {
     };
 
     # Parse xrd document
-    $xrd = $c->new_xrd($xrd_res->body) or return;
+    $xrd = $h->new_xrd($xrd_res->body) or return;
 
     # Filter relations
     $xrd = $xrd->filter_rel($rel) if $rel;
@@ -210,7 +212,7 @@ sub _get_xrd {
 	if ($xrd_res->is_status_class(200)) {
 
 	  # Parse xrd document
-	  $xrd = $c->new_xrd($xrd_res->body) or return $cb->(undef);
+	  $xrd = $h->new_xrd($xrd_res->body) or return $cb->(undef);
 
 	  # Filter relations
 	  $xrd = $xrd->filter_rel($rel) if $rel;
@@ -249,7 +251,7 @@ sub _get_xrd {
 	  if (my $xrd_res = pop->success) {
 
 	    # Parse xrd document
-	    $xrd = $c->new_xrd($xrd_res->body) or return $cb->(undef);
+	    $xrd = $h->new_xrd($xrd_res->body) or return $cb->(undef);
 
 	    # Filter relations
 	    $xrd = $xrd->filter_rel($rel) if $rel;
@@ -426,9 +428,9 @@ L<Mojolicious::Plugin::XML::Loy>.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2011-2013, L<Nils Diewald|http://nils-diewald.de/>.
+Copyright (C) 2011-2014, L<Nils Diewald|http://nils-diewald.de/>.
 
 This program is free software, you can redistribute it
-and/or modify it under the same terms as Perl.
+and/or modify it under the terms of the Artistic License version 2.0.
 
 =cut

@@ -13,11 +13,11 @@ WriteMakefile(
     'Test::More' => 0
   },
   PREREQ_PM => {
-    'Mojolicious' => 4.23,
+    'Mojolicious' => 5.29,
     'Mojolicious::Plugin::XML::Loy' => 0.05,
     'XML::Loy' => 0.19
   },
-  LICENSE      => 'perl',
+  LICENSE      => 'artistic_2',
   META_MERGE   => {
     requires  => { perl => '5.010001' },
     resources => {
