@@ -2,7 +2,7 @@ package Mojolicious::Plugin::XRD;
 use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::Util qw/quote/;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 # Todo: Support
 #  $self->render_xrd( $xrd => {
@@ -62,7 +62,7 @@ sub register {
       elsif ($c->param('rel')) {
 
 	# Clone and filter relations
-	$xrd = $xrd->filter_rel( $c->param('rel') );
+	$xrd = $xrd->filter_rel( $c->every_param('rel') );
       };
 
       my $head_data = $c->req->method eq 'HEAD' ? '' : undef;
