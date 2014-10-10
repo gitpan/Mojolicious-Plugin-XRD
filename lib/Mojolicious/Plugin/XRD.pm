@@ -2,7 +2,7 @@ package Mojolicious::Plugin::XRD;
 use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::Util qw/quote/;
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 # Todo: Support
 #  $self->render_xrd( $xrd => {
@@ -127,7 +127,6 @@ sub _get_xrd {
 
   # Get callback
   my $cb = pop if ref($_[-1]) && ref($_[-1]) eq 'CODE';
-
 
   # Build relations parameter
   my $rel;
@@ -389,7 +388,10 @@ specification for further explanation).
 
 This method can be used in a blocking or non-blocking way.
 For non-blocking retrieval, pass a callback function as the
-last argument.
+last argument. As the first passed response is the L<XML::Loy::XRD>
+document, you have to use an offset of C<0> in
+L<begin|Mojo::IOLoop::Delay/begin> for parallel requests using
+L<Mojo::IOLoop::Delay>.
 
 B<This method is experimental and may change wihout warnings.>
 

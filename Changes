@@ -1,3 +1,6 @@
+0.10 2014-10-10
+        - Improved test suite for parallel requests with delay.
+
 0.09 2014-10-10
         - Update to Mojolicious 5.48.
 
