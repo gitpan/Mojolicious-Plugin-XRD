@@ -1,3 +1,6 @@
+0.11 2014-10-11
+        - Fix minimum requirement in makefile.
+
 0.10 2014-10-10
         - Improved test suite for parallel requests with delay.
 

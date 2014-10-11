@@ -18,11 +18,11 @@ no_index:
     - t
     - inc
 requires:
-  Mojolicious: '5.29'
+  Mojolicious: '5.48'
   Mojolicious::Plugin::XML::Loy: '0.05'
   XML::Loy: '0.19'
   perl: '5.010001'
 resources:
   license: http://www.opensource.org/licenses/artistic-license-2.0
   repository: https://github.com/Akron/Mojolicious-Plugin-XRD
-version: '0.10'
+version: '0.11'
