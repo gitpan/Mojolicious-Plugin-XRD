@@ -1,3 +1,7 @@
+0.12 2014-12-09
+        - Remove deprecated oo-json usage.
+	- Remove route definitions per "route".
+
 0.11 2014-10-11
         - Fix minimum requirement in makefile.
 

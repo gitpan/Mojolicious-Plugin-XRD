@@ -25,4 +25,4 @@ requires:
 resources:
   license: http://www.opensource.org/licenses/artistic-license-2.0
   repository: https://github.com/Akron/Mojolicious-Plugin-XRD
-version: '0.11'
+version: '0.12'

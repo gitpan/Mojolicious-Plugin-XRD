@@ -2,7 +2,7 @@ package Mojolicious::Plugin::XRD;
 use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::Util qw/quote/;
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 # Todo: Support
 #  $self->render_xrd( $xrd => {

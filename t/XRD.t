@@ -7,7 +7,7 @@ use lib '../lib';
 use Test::More;
 use Test::Mojo;
 use Mojolicious::Lite;
-use Mojo::JSON;
+use Mojo::JSON qw/decode_json encode_json/;
 
 my $t = Test::Mojo->new;
 
@@ -64,7 +64,7 @@ is($xrd->at('Property[type="bar"]')->text, 'foo', 'DOM access Property');
 is($xrd->property('bar')->text, 'foo', 'DOM access Property');
 
 is_deeply(
-    Mojo::JSON->new->decode($xrd->to_json),
+    decode_json($xrd->to_json),
     { links => [ { rel => 'foo' }],
       properties => { bar  => 'foo' } },
     'Correct JRD');
@@ -140,25 +140,23 @@ XRD
 
 $xrd = $app->new_xrd($xrd_doc);
 
-my $json = Mojo::JSON->new;
-
 is_deeply(
-  $json->decode($xrd->to_json),
-  $json->decode($jrd_doc), 'JRD'
+  decode_json($xrd->to_json),
+  decode_json($jrd_doc), 'JRD'
 );
 
 $xrd = $app->new_xrd($jrd_doc);
 
 is_deeply(
-  $json->decode($xrd->to_json),
-  $json->decode($jrd_doc), 'JRD'
+  decode_json($xrd->to_json),
+  decode_json($jrd_doc), 'JRD'
 );
 
-$app->routes->route('/test')->to(
+$app->routes->any('/test')->to(
   cb => sub { shift->render_xrd($xrd) }
 );
 
-$app->routes->route('/no_test')->to(
+$app->routes->any('/no_test')->to(
   cb => sub {
     my $c = shift;
     return $c->render_xrd(undef, $c->param('res'))
